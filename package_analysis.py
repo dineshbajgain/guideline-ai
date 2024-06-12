@@ -44,3 +44,55 @@ def analyze_package_json(package_json):
         'license': package_json.get('license')
     }
     return analysis
+
+def analyze_github_repo(repo_url):
+    # Extract owner and repo name from URL
+    owner, repo = repo_url.split('/')[-2:]
+
+    # Construct the URL for the GitHub API
+    url = f"https://api.github.com/repos/{owner}/{repo}"
+
+    # Make the GET request
+    response = requests.get(url)
+
+    # Extract the required information
+    data = response.json()
+    language = data.get('language')
+    default_branch = data.get('default_branch')
+    total_commits = data.get('size')
+    total_prs = data.get('open_issues_count')  # This includes issues as well
+    total_branches = len(requests.get(f"{url}/branches").json())
+    total_contributors = len(requests.get(f"{url}/contributors").json())
+    last_update = data.get('updated_at')
+
+    # Get the list of vulnerabilities
+    vulnerabilities = requests.get(f"{url}/security/advisories").json()
+
+    # Get the security issues
+    security_issues = requests.get(f"{url}/issues?labels=security").json()
+
+    # Save to file
+    with open('output.md', 'w') as f:
+        f.write(f"# {repo} Analysis\n")
+        f.write(f"- Language: {language}\n")
+        f.write(f"- Default Branch: {default_branch}\n")
+        f.write(f"- Total Commits: {total_commits}\n")
+        f.write(f"- Total PRs: {total_prs}\n")
+        f.write(f"- Total Branches: {total_branches}\n")
+        f.write(f"- Total Contributors: {total_contributors}\n")
+        f.write(f"- Last Update: {last_update}\n")
+        f.write(f"- Vulnerabilities: {vulnerabilities}\n")
+        f.write(f"- Security Issues: {security_issues}\n")
+
+    # Return the information
+    return {
+        'language': language,
+        'default_branch': default_branch,
+        'total_commits': total_commits,
+        'total_prs': total_prs,
+        'total_branches': total_branches,
+        'total_contributors': total_contributors,
+                'last_update': last_update,
+        'vulnerabilities': vulnerabilities,
+        'security_issues': security_issues
+    } 

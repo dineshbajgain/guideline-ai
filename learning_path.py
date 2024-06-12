@@ -5,18 +5,14 @@ def create_learning_path(dependencies, dev_dependencies):
 
     # Generate learning resources using Gen AI
     for dependency in dependencies:
-        resources = generate_learning_resources(dependency)
         learning_path.append({
             'dependency': dependency,
-            'resources': resources,
             'progress': 0  # Track progress for each dependency
         })
 
     for dev_dependency in dev_dependencies:
-        resources = generate_learning_resources(dev_dependency)
         learning_path.append({
             'dependency': dev_dependency,
-            'resources': resources,
             'progress': 0  # Track progress for each devDependency
         })
 
