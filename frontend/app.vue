@@ -5,6 +5,7 @@
       <button v-if="!isTop" @click="updateUrl">Start</button>
       <button v-else @click="resetUrl">Reset</button>
     </div>
+    <ProgressSpinner v-if="isLoading" class="spinner" />
     <listAll v-if="totalDependencies > 0" :class="{'list-all': true, 'top': isTop, 'center': !isTop}" />
   </div>
 </template>
@@ -16,13 +17,14 @@ const guidlineStore = useGuidlineStore()
 const url = ref('')
 const isTop = ref(false)
 const totalDependencies = ref(guidlineStore.totalDependencies)
-
+const isLoading = ref(false)
 watch(() => guidlineStore.totalDependencies, (newVal, oldVal) => {
   totalDependencies.value = guidlineStore.totalDependencies
   isTop.value = totalDependencies.value>0 && true  // Toggle isTop
 });
 
 const updateUrl = async () => {
+  isLoading.value = true
   await guidlineStore.updateUrl(url.value)
 }
 
@@ -77,6 +79,10 @@ button {
   margin-top: 30px;
   position: absolute;
   top: 0;
+}
+.spinner {
+  position: relative;
+  margin-top: 10em;
 }
 .list-all{
   position: relative;
