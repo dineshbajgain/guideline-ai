@@ -37,6 +37,8 @@ const resetUrl = () => {
 
 .list-all{
   background-image: url('./public/git.webp');
+  background-size: contain;
+  width: 100%;
 }
 .body {
   background-color: black;
