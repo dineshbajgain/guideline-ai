@@ -1,0 +1,3 @@
+backend/output/*
+__pycache__/*
+backend/temp_repo/*
