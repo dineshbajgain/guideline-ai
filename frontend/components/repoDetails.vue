@@ -29,7 +29,10 @@
                         Total Contributors :{{ analyzeData.total_contributors }}
                     </div>
                     <div class="individual-data">
-                        contributors :{{ analyzeData.contributors }}
+                        contributors :
+                        <template v-for="contributor in analyzeData.contributors" >
+                            <Button type="button" :label="contributor.name" icon="pi pi-inbox" :badge="contributor.contribution" badgeSeverity="contrast" outlined />
+                        </template>
                     </div>
                     <div class="individual-data">
                         Last Update : {{ analyzeData.last_update }}
