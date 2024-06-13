@@ -1,27 +1,63 @@
+
 <template>
-    <div class="repo-card">
-        <div class="repo-card-header">
-            <h2>{{ repo.name }}</h2>
-            <p>{{ repo.description }}</p>
-        </div>
-        <div class="repo-card-body">
-            <div class="repo-card-body-left">
-                <p>Stars: {{ repo.stargazers_count }}</p>
-                <p>Issues: {{ repo.open_issues_count }}</p>
+    <Card>
+        <template #title>Details of Repo [{{analyzeData.repo_name}}]</template>
+        <template #content>
+            <div class="flex flex-row">
+                <div class="repo-data-row">
+                    <div class="individual-data">
+                        Repo Name :{{analyzeData.repo_name}}
+                    </div>
+                    <div class="individual-data">
+                        Language :{{analyzeData.language}}
+                    </div>
+                    <div class="individual-data">
+                        Default Branch :{{analyzeData.default_branch}}
+                    </div>
+                    <div class="individual-data">
+                        Total Commits :{{ analyzeData.total_commits }}
+                    </div>
+                    <div class="individual-data">
+                        Total Prs :{{ analyzeData.total_prs }}
+                    </div>
+                </div>
+                <div class="repo-data-row">
+                    <div class="individual-data">
+                        Total Branches :{{ analyzeData.total_branches }}
+                    </div>
+                    <div class="individual-data">
+                        Total Contributors :{{ analyzeData.total_contributors }}
+                    </div>
+                    <div class="individual-data">
+                        contributors :{{ analyzeData.contributors }}
+                    </div>
+                    <div class="individual-data">
+                        Last Update : {{ analyzeData.last_update }}
+                    </div>
+                </div>
             </div>
-            <div class="repo-card-body-right">
-                <p>Language: {{ repo.language }}</p>
-                <p>License: {{ repo.license?.name }}</p>
-            </div>
-        </div>
-    </div>
+        </template>
+    </Card>
 </template>
+
 <script setup>
-import { ref } from 'vue'
-const repo = ref({
-    name: 'vue',
-    description: 'Vue.js is a progressive framework for building user interfaces.',
-    stargazers_count: 100000,
-    open_issues_count: 1000,
-})
+import { useGuidlineStore } from '~/store/guidline.js'
+const guidlineStore = useGuidlineStore();
+const analyzeData = ref({});
+guidlineStore.getRepoAnalysis();
+watch(() => guidlineStore.analyzeData, (newVal, oldVal) => {
+    analyzeData.value = guidlineStore.analyzeData;
+});
 </script>
+<style scoped>
+.flex{
+    display: flex;
+}
+.individual-data{
+    font-size: 18px;
+    line-height: 40px;
+}
+.repo-data-row{
+padding: 20px 150px 20px 0px;
+}
+</style>

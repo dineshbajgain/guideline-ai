@@ -2,6 +2,9 @@
 <template>
     <div class="card">
         <transition-group name="list">
+        <div class="repo-details">
+            <repoDetails :class="{'repo-content': true, 'top': isTop, 'center': !isTop}" />
+        </div>
           
         <Timeline :value="events" align="alternate" class="customized-timeline">
             <template #marker="slotProps">
@@ -31,6 +34,7 @@
 <script setup>
 import { ref } from "vue";
 import { useGuidlineStore } from '~/store/guidline.js'
+import repoDetails from '~/components/repoDetails.vue'
 const guidlineStore = useGuidlineStore()
 const events = ref(guidlineStore.learningPath);
 
@@ -51,5 +55,8 @@ const events = ref(guidlineStore.learningPath);
             flex: 0;
         }
     }
+}
+.repo-details{
+    padding: 2em 1em;
 }
 </style>

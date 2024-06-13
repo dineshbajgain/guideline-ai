@@ -1,18 +1,26 @@
 <template>
-  <div class="body">
+  <div>
+    <div class="body">
     <div :class="{'input-box': true, 'top': isTop, 'center': !isTop}">
       <input type="text" v-model="url">
       <button v-if="!isTop" @click="updateUrl">Start</button>
       <button v-else @click="resetUrl">Reset</button>
     </div>
     <ProgressSpinner v-if="isLoading" class="spinner" />
-    <listAll v-if="totalDependencies > 0" :class="{'list-all': true, 'top': isTop, 'center': !isTop}" />
+  </div>
+  <div class="main-body">
+    <div class="flex">
+      <listAll v-if="totalDependencies > 0" :class="{'list-all': true, 'top': isTop, 'center': !isTop}" />
+    </div>
+  </div>
   </div>
 </template>
 <script setup>
 import 'primevue/resources/themes/aura-light-green/theme.css'
 import { useGuidlineStore } from '~/store/guidline.js'
 import listAll from '~/components/package/listAll.vue'
+import repoDetails from '~/components/repoDetails.vue'
+
 const guidlineStore = useGuidlineStore()
 const url = ref('')
 const isTop = ref(false)
@@ -29,6 +37,7 @@ const updateUrl = async () => {
 }
 
 const resetUrl = () => {
+  isLoading.value = false
   url.value = ''
   guidlineStore.resetUrl()
   isTop.value = false  // Toggle isTop
@@ -84,19 +93,23 @@ button {
   position: relative;
   margin-top: 10em;
 }
-.list-all{
+.repo-details,.list-all{
   position: relative;
   margin-top: 40em;
   transition: all 0.5s ease; /* Add this line */
 }
-.list-all.center {
+.repo-details.center,.list-all.center {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
 }
-.list-all.top {
+.repo-details.top,.list-all.top {
   margin-top: 7em;
   position: absolute;
   top: 0;
+}
+.main-body{
+  z-index: 1;
+  margin-top: 10em;
 }
 </style>

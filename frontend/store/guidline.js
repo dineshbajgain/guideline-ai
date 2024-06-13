@@ -4,12 +4,14 @@ export const useGuidlineStore = defineStore('guidline', {
     url: '',
     learningPath:[],
     totalDependencies: 0,
+    analyzeData: {}
   }),
   actions: {
     resetUrl(){
         this.url = '';
         this.learningPath = [];
-        this.totalDependencies= 0
+        this.totalDependencies= 0;
+        this.analyzeData = {};
     }, 
     updateUrl(url){
         this.url = url
@@ -26,5 +28,14 @@ export const useGuidlineStore = defineStore('guidline', {
             console.error(error)
         }
     },
+    async getRepoAnalysis(){
+        const { $axios } = useNuxtApp()
+        try {
+            const response = await $axios.post('/getRepoAnalysis',{repo_url: this.url})
+            this.analyzeData =  response.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
   }
 })
