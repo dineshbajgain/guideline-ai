@@ -3,6 +3,7 @@ from flask_cors import CORS
 from package_analysis import clone_repo_and_get_package_json, analyze_package_json, analyze_github_repo
 from learning_path import create_learning_path, update_progress
 from documentation import generate_documentation
+from gen_ai import generate_learning_resources
 import json
 
 app = Flask(__name__)
@@ -93,5 +94,10 @@ def createLearningPath():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/generateText', methods=['POST'])
+def generateText():
+    dependency = request.json['dependency']
+    resources = generate_learning_resources(dependency)
+    return jsonify({'resources': resources})
 if __name__ == "__main__":
     app.run(debug=True)

@@ -2,12 +2,14 @@ import { defineStore } from 'pinia'
 export const useGuidlineStore = defineStore('guidline', {
   state: () => ({
     url: '',
-    learningPath:[]
+    learningPath:[],
+    totalDependencies: 0,
   }),
   actions: {
     resetUrl(){
         this.url = '';
-        this.learningPath = []
+        this.learningPath = [];
+        this.totalDependencies= 0
     }, 
     updateUrl(url){
         this.url = url
@@ -19,6 +21,7 @@ export const useGuidlineStore = defineStore('guidline', {
         try {
             const response = await $axios.post('/createLearningPath', path)
             this.learningPath = response.data
+            this.totalDependencies= response.data.length
         } catch (error) {
             console.error(error)
         }

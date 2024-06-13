@@ -5,27 +5,42 @@
       <button v-if="!isTop" @click="updateUrl">Start</button>
       <button v-else @click="resetUrl">Reset</button>
     </div>
+    <listAll v-if="totalDependencies > 0" :class="{'list-all': true, 'top': isTop, 'center': !isTop}" />
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import 'primevue/resources/themes/aura-light-green/theme.css'
 import { useGuidlineStore } from '~/store/guidline.js'
+import listAll from '~/components/package/listAll.vue'
 const guidlineStore = useGuidlineStore()
 const url = ref('')
 const isTop = ref(false)
-const updateUrl = () => {
-  guidlineStore.updateUrl(url.value)
-  isTop.value = true  // Toggle isTop
+const totalDependencies = ref(guidlineStore.totalDependencies)
+
+watch(() => guidlineStore.totalDependencies, (newVal, oldVal) => {
+  totalDependencies.value = guidlineStore.totalDependencies
+  isTop.value = totalDependencies.value>0 && true  // Toggle isTop
+});
+
+const updateUrl = async () => {
+  await guidlineStore.updateUrl(url.value)
 }
+
 const resetUrl = () => {
+  url.value = ''
   guidlineStore.resetUrl()
   isTop.value = false  // Toggle isTop
 }
 </script>
 <style scoped>
 /* background black with lighting input fuld of 50% width */
+
+.list-all{
+  background-image: url('./public/git.webp');
+}
 .body {
   background-color: black;
+  background-image: url('./public/git.webp');
   display: flex;
   justify-content: center;
   align-items: center;
@@ -58,6 +73,21 @@ button {
 }
 .input-box.top {
   margin-top: 30px;
+  position: absolute;
+  top: 0;
+}
+.list-all{
+  position: relative;
+  margin-top: 40em;
+  transition: all 0.5s ease; /* Add this line */
+}
+.list-all.center {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.list-all.top {
+  margin-top: 7em;
   position: absolute;
   top: 0;
 }
