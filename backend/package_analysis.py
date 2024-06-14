@@ -4,6 +4,7 @@ from git import Repo
 from pathlib import Path
 import requests
 import base64
+from datetime import datetime, timedelta
 
 def download_package_json(repo_url):
     owner_repo = repo_url.rstrip('/').split('/')[-2:]
@@ -45,9 +46,10 @@ def analyze_package_json(package_json):
     }
     return analysis
 
-def analyze_github_repo(repo_url):
+def analyze_github_repo(repo_url,custom_day):
     # Extract owner and repo name from URL
     owner, repo = repo_url.split('/')[-2:]
+    since = (datetime.now() - timedelta(days=custom_day)).isoformat() + 'Z'
 
     # Construct the URL for the GitHub API
     url = f"https://api.github.com/repos/{owner}/{repo}"
@@ -63,12 +65,12 @@ def analyze_github_repo(repo_url):
     language = data.get('language')
     default_branch = data.get('default_branch')
     total_commits = data.get('size')
-    total_prs = data.get('open_issues_count')  # This includes issues as well
-    total_branches = len(requests.get(f"{url}/branches",headers=headers).json())
-    total_contributors = len(requests.get(f"{url}/contributors",headers=headers).json())
+    total_prs = len(requests.get(f"{url}/pulls?state=active&since={since}",headers=headers).json())
+    total_branches = len(requests.get(f"{url}/branches?since={since}",headers=headers).json())
+    total_contributors = len(requests.get(f"{url}/contributors?since={since}",headers=headers).json())
     
     # Get the list of contributors
-    contributors_response = requests.get(f"{url}/contributors",headers=headers)
+    contributors_response = requests.get(f"{url}/contributors?since={since}",headers=headers)
     if contributors_response.status_code == 200:
         contributors = []
         for user in contributors_response.json():
@@ -89,6 +91,26 @@ def analyze_github_repo(repo_url):
     # Get the security issues
     security_issues = requests.get(f"{url}/issues?labels=security").json()
 
+    # Fetch commits from the past month
+    commits_response = requests.get(f"{url}/commits?since={since}", headers=headers)
+    commits = commits_response.json()
+    
+
+    # Count contributions per contributor in the past month
+    contributor_changes = {}
+    for commit in commits:
+        author = commit['commit']['author']['name']
+        if author not in contributor_changes:
+            contributor_changes[author] = 0
+        contributor_changes[author] += 1
+
+    # Identify the top contributor
+    if contributor_changes:
+        top_contributor = max(contributor_changes, key=contributor_changes.get)
+        top_contributor_changes = contributor_changes[top_contributor]
+    else:
+        top_contributor = None
+        top_contributor_changes = 0
     # Save to file
     # with open('output.md', 'w') as f:
     #     f.write(f"# {repo} Analysis\n")
@@ -114,5 +136,7 @@ def analyze_github_repo(repo_url):
         'last_update': last_update,
         'vulnerabilities': vulnerabilities,
         'security_issues': security_issues,
-        'contributors': contributors
+        'contributors': contributors,
+        'top_contributor': top_contributor,
+        'top_contributor_changes': top_contributor_changes
     } 

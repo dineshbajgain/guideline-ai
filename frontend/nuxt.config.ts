@@ -1,12 +1,27 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['@pinia/nuxt','nuxt-primevue'],
-  plugins: [
-    '~/plugins/axios.js'
+  modules: ['@pinia/nuxt',
+    (_options, nuxt) => {
+      nuxt.hooks.hook('vite:extendConfig', (config) => {
+        // @ts-expect-error
+        config.plugins.push(vuetify({ autoImport: true }))
+      })
+    },
   ],
-  primevue: {
-
+  plugins: [
+    '~/plugins/axios.js',
+    '~/plugins/vuetify.js',
+  ],
+  build: {
+    transpile: ['vuetify'],
   },
-  css: ['primevue/resources/themes/aura-light-green/theme.css']
+  vite: {
+    vue: {
+      template: {
+        transformAssetUrls,
+      },
+    },
+  },
 })
