@@ -4,15 +4,23 @@ from datetime import datetime, timedelta
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
-repo_path = repo_path = os.path.join(os.path.dirname(__file__), "../temp")
+repo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "temp_repo")
 INVALID_DAYS_ERROR = "Invalid 'days' parameter. It must be an integer."
+REPO_NOT_EXIST_ERROR = "Repository not cloned or does not exist!"
 
 
-@app.route("/commit-history", methods=["GET"])
+def __does_repo_exist():
+    print(repo_path)
+    return os.path.exists(repo_path)
+
+
 def get_commit_history():
 
+    if not __does_repo_exist():
+        return jsonify({"error": REPO_NOT_EXIST_ERROR}), 404
+
     # Get the 'days' query parameter
-    days = request.args.get("days")
+    days = request.json["days"]
 
     git_command = ["git", "log", "--pretty=format:%h - %an, %ar : %s"]
 
@@ -20,10 +28,7 @@ def get_commit_history():
     if days:
         try:
             days = int(days)
-            since_date = (datetime.now() - datetime.timedelta(days=days)).strftime(
-                "%Y-%m-%d"
-            )
-            git_command.extend(["--since", since_date])
+            since_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
 
         except ValueError:
             return (
@@ -31,10 +36,9 @@ def get_commit_history():
                 400,
             )
     else:
-        return (
-            jsonify({"error": "Missing 'days' parameter. It must be an integer."}),
-            422,
-        )
+        since_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+
+    git_command.extend(["--since", since_date])
 
     try:
         result = subprocess.run(
@@ -49,11 +53,13 @@ def get_commit_history():
         return jsonify({"Error occurred while fetching commit history! ": str(e)}), 500
 
 
-@app.route("/highest-contributor", methods=["GET"])
 def get_highest_contributor():
 
+    if not __does_repo_exist():
+        return jsonify({"error": REPO_NOT_EXIST_ERROR}), 404
+
     # Get the 'days' query parameter
-    days = request.args.get("days")
+    days = request.json["days"]
 
     # Calculate the date for one month ago or the --since parameter
     try:
@@ -92,11 +98,13 @@ def get_highest_contributor():
         )
 
 
-@app.route("/lines-changed", methods=["GET"])
 def get_total_lines_updated():
 
+    if not __does_repo_exist():
+        return jsonify({"error": REPO_NOT_EXIST_ERROR}), 404
+
     # Get the 'days' query parameter
-    days = request.args.get("days")
+    days = request.json["days"]
 
     # Calculate the date for the --since parameter
     if days:
@@ -117,7 +125,7 @@ def get_total_lines_updated():
         "log",
         "--since",
         since_date,
-        "--pretty=tformat:",
+        "--pretty=format:%an",
         "--numstat",
     ]
 
@@ -126,17 +134,16 @@ def get_total_lines_updated():
             git_command, cwd=repo_path, text=True, capture_output=True, check=True
         )
 
-        # Parse the output to find the total lines updated
-        lines = result.stdout.strip().split(",")
-        if not lines:
-            return (
-                jsonify({"error": "No lines of code changed in the last month."}),
-                404,
-            )
+        lines = result.stdout.strip().split("\n")
+        user_changes = __parse_lines(lines)
 
-        total_lines_updated = lines[1].strip().split(" ")[0]
+        sorted_changes = sorted(
+            user_changes.items(),
+            key=lambda x: (x[1]["added"] + x[1]["removed"]),
+            reverse=True,
+        )
 
-        return jsonify({"total_lines_updated": int(total_lines_updated)}), 200
+        return jsonify(sorted_changes), 200
 
     except subprocess.CalledProcessError as e:
         return (
@@ -149,3 +156,26 @@ def get_total_lines_updated():
             ),
             500,
         )
+
+
+def __parse_lines(lines):
+    user_changes = {}
+    current_user = None
+
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        if not line[0].isdigit():  # Assume user names don't start with a digit
+            current_user = line
+            if current_user not in user_changes:
+                user_changes[current_user] = {"added": 0, "removed": 0}
+        else:
+            try:
+                add, rm, _ = line.split()
+                user_changes[current_user]["added"] += int(add)
+                user_changes[current_user]["removed"] += int(rm)
+            except ValueError:
+                continue
+
+    return user_changes
