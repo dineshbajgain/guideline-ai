@@ -51,7 +51,9 @@ def analyze_github_repo(repo_url):
 
     # Construct the URL for the GitHub API
     url = f"https://api.github.com/repos/{owner}/{repo}"
-
+    headers = {
+            'Authorization': f'token '
+        }
     # Make the GET request
     response = requests.get(url)
 
@@ -62,15 +64,20 @@ def analyze_github_repo(repo_url):
     default_branch = data.get('default_branch')
     total_commits = data.get('size')
     total_prs = data.get('open_issues_count')  # This includes issues as well
-    total_branches = len(requests.get(f"{url}/branches").json())
-    total_contributors = len(requests.get(f"{url}/contributors").json())
+    total_branches = len(requests.get(f"{url}/branches",headers=headers).json())
+    total_contributors = len(requests.get(f"{url}/contributors",headers=headers).json())
     
     # Get the list of contributors
-    contributors_response = requests.get(f"{url}/contributors")
+    contributors_response = requests.get(f"{url}/contributors",headers=headers)
     if contributors_response.status_code == 200:
-        contributors = [user['login'] for user in contributors_response.json()]
+        contributors = []
+        for user in contributors_response.json():
+            contributors.append({
+                "name": user['login'],
+                "contribution":user['contributions'],
+            })
+
     else:
-        print(f"Failed to get contributors: {contributors_response.content}")
         contributors = []
 
 
