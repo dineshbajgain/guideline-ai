@@ -19,8 +19,9 @@ def test():
 @app.route('/getRepoAnalysis', methods=['POST'])
 def getRepoAnalysis():
     repo_url = request.json['repo_url']
+    custom_day = request.json['custom_day']
     try:
-        repoAnalysis = analyze_github_repo(repo_url)
+        repoAnalysis = analyze_github_repo(repo_url, custom_day)
         return jsonify(repoAnalysis)
     except Exception as e:
         return jsonify({'error': str(e)}), 500

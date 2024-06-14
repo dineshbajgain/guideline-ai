@@ -1,33 +1,32 @@
 
 <template>
-    <div class="card">
-        <transition-group name="list">
-        <div class="repo-details">
+    <div>
+        <div>
             <repoDetails :class="{'repo-content': true, 'top': isTop, 'center': !isTop}" />
         </div>
-          
-        <Timeline :value="events" align="alternate" class="customized-timeline">
-            <template #marker="slotProps">
-                <span class="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1" :style="{ backgroundColor: slotProps.item.color }">
-                    <i :class="slotProps.item.icon"></i>
-                </span>
-            </template>
-            <template #content="slotProps">
-                <Card class="mt-3">
-                    <template #title>
-                        {{ slotProps.item.dependency }}
-                    </template>
-                    <template #subtitle>
-                        {{ slotProps.item.date }}
-                    </template>
-                    <template #content>
-                        
-                        <Button label="Read more" text></Button>
-                    </template>
-                </Card>
-            </template>
-        </Timeline>
-        </transition-group>
+            <v-timeline align="start">
+                <v-timeline-item
+                    v-for="(item, i) in events"
+                    :key="i"
+                    :dot-color="colors[Math.floor(Math.random()*colors.length)]"
+                    :icon="icons[Math.floor(Math.random()*icons.length)]"
+                    fill-dot
+                >
+                    <v-card>
+                    <v-card-title :class="['text-h6', `bg-${colors[Math.floor(Math.random()*colors.length)]}`]">
+                        {{ item.dependency }}
+                    </v-card-title>
+                    <v-card-text class="bg-white text--primary">
+                        <p>Lorem ipsum dolor sit amet, no nam oblique veritus. Commune scaevola imperdiet nec ut, sed euismod convenire principes at. Est et nobis iisque percipit, an vim zril disputando voluptatibus, vix an salutandi sententiae.</p>
+                        <v-btn
+                        variant="outlined"
+                        >
+                        Button
+                        </v-btn>
+                    </v-card-text>
+                    </v-card>
+                </v-timeline-item>
+            </v-timeline>
     </div>
 </template>
 
@@ -37,7 +36,13 @@ import { useGuidlineStore } from '~/store/guidline.js'
 import repoDetails from '~/components/repoDetails.vue'
 const guidlineStore = useGuidlineStore()
 const events = ref(guidlineStore.learningPath);
+const visible = ref(false);
+const changeVisible = () => {
+    visible.value = !visible.value;
+}
 
+const colors =['red-lighten-2','purple-lighten-2','green-lighten-1','indigo-lighten-2'];
+const icons = ['mdi-star','mdi-book-variant','mdi-airballoon','mdi-layers-triple'];
 </script>
 
 <style lang="scss" scoped>

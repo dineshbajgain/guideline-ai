@@ -10,16 +10,17 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "@pinia/nuxt": "^0.5.1",
     "axios": "^1.7.2",
     "nuxt": "^3.12.1",
     "pinia": "^2.1.7",
-    "primevue": "^3.52.0",
     "vue": "^3.4.27",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
-    "nuxt-primevue": "^3.0.0",
-    "sass": "^1.77.5"
+    "sass": "^1.77.5",
+    "vite-plugin-vuetify": "^2.0.3",
+    "vuetify": "^3.6.9"
   }
 }
