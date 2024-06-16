@@ -33,6 +33,11 @@ export const guidlineStore = defineStore('guidline', {
     setLoading(loading){
         this.loading = loading
     },
+    setAllDependencies(changeProgress){
+        console.log('setAllDependencies',changeProgress)
+        const index = this.allDependencies.findIndex((dependency) => dependency.dependency === changeProgress.dependency)
+        this.allDependencies[index].progress = changeProgress.progress
+    },
     // cloneRepo
     async postCloneRepo(){
         const { $axios } = useNuxtApp()

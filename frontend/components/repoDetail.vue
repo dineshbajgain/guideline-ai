@@ -5,7 +5,7 @@
             <div class="d-flex">
                 <span class="font-weight-black">Details of Repo [{{ repoDetails.repo_name }}]</span>
                 <div class="ml-auto w-custom">
-                    <v-select :items="items" v-model="selectedSquad" item-title="name" label="Squad">
+                    <v-select variant="outlined" :items="items" v-model="selectedSquad" item-title="name" label="Squad">
                         <template v-slot:item="{ props, item }">
                         <v-list-item v-bind="props" :subtitle="item.raw.department"></v-list-item>
                         </template>
@@ -47,6 +47,11 @@
                     <div class="individual-data">
                         Total Contributors :{{ repoDetails.total_contributors - 1 }} + Contributers
                         <v-btn v-if="selectedSquad" @click="dialog = true" small>Squad contributers</v-btn>
+                    </div>
+                    <div v-if="selectedSquad" class="individual-data">
+                        Squad Confidence : <v-chip variant="outlined">
+                            {{ squadConfidence.toFixed(2) }} %
+                    </v-chip>
                     </div>
                     <!-- <div class="individual-data">
                         contributors :
@@ -204,7 +209,7 @@
 
 <script setup>
 
-const { loading, repoDetails, postGetUserSentimentAnalysis, sentimentAnalysisData,getCommitHistory, commitHistory, setLoading } = useGuidline()
+const { loading, repoDetails, postGetUserSentimentAnalysis, sentimentAnalysisData,getCommitHistory, commitHistory, setLoading, squadConfidence } = useGuidline()
 const items = [
     {
         name: 'dhaulagiri',

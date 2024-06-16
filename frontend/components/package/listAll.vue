@@ -39,7 +39,20 @@
                 </template>
                     <v-card v-else> 
                         <v-card-title>
-                            {{ drawerData.dependency }}
+                            <div class="d-flex justify-space-between">
+                                <div>
+                                    {{ drawerData.dependency }}
+                                </div>
+                                <v-select
+                                    label="Select"
+                                    :items="packageKnowledgeStatus"
+                                    v-model="progress"
+                                    item-title="title"
+                                    item-value="value"
+                                    variant="outlined"
+                                    max-width="200"
+                                    ></v-select>
+                            </div>
                         </v-card-title>
                         <v-card-text v-if="dependencyHistory.readme">
                             <v-card>
@@ -80,7 +93,8 @@
 <script setup>
 import repoDetail from '~/components/repoDetail.vue'
 import readmeDisplay from '~/components/readmeDisplay.vue'
-const { loading, allDependencies, getDependenciesHistory, dependencyHistory, setLoading } = useGuidline()
+import { watch } from 'vue'
+const { loading, allDependencies, getDependenciesHistory, dependencyHistory, setLoading, setAllDependencies } = useGuidline()
 const isTop = ref(true)
 const drawer = ref(false)
 const drawerData = ref(null);
@@ -90,10 +104,37 @@ const dependencyDetails = async (item) => {
     drawer.value = true;
     drawerData.value = item;
     await getDependenciesHistory(item.dependency)
+    progress.value = packageKnowledgeStatus.value.find((status) => status.value == item.progress);
     setLoading(false);
 }
 const colors =['red-lighten-2','purple-lighten-2','green-lighten-1','indigo-lighten-2'];
 const icons = ['mdi-star','mdi-book-variant','mdi-airballoon','mdi-layers-triple'];
+const progress = ref({
+    title: 'Not Known',
+    value: '0'
+});
+const packageKnowledgeStatus = ref([
+{
+    title: 'Not Known',
+    value: '0'
+},
+{
+    title: 'Known',
+    value: '30'
+},{
+    title: 'Learning',
+    value: '70'
+},{
+    title: 'Expert',
+    value: '100'
+}
+])
+watch(progress, (newVal) => {
+    setAllDependencies({
+        dependency: drawerData.value.dependency,
+        progress: parseInt(newVal.value || newVal)
+    })
+})
 </script>
 
 <style lang="scss" scoped>
