@@ -49,7 +49,7 @@
                         <v-btn v-if="selectedSquad" @click="dialog = true" small>Squad contributers</v-btn>
                     </div>
                     <div v-if="selectedSquad" class="individual-data">
-                        Squad Confidence : <v-chip variant="outlined">
+                        Squad Confidence : <v-chip color="primary" variant="flat">
                             {{ squadConfidence.toFixed(2) }} %
                     </v-chip>
                     </div>
