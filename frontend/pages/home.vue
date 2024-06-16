@@ -10,25 +10,36 @@
         variant="outlined"
       ></v-text-field>
       <div>
-        <button v-if="!isTop" @click="updateUrl">Start</button>
+        <button v-if="!isTop" @click="updateGitUrl">Start</button>
         <button v-else @click="resetUrl">Reset</button>
       </div>
       </div>
         </div>
         <v-progress-circular
-      color="primary"
-      v-if="isLoading"
-      indeterminate
-    ></v-progress-circular>
+          color="primary"
+          v-if="loading"
+          indeterminate
+        ></v-progress-circular>
     </div>
     <div class="main-body">
       <div class="flex">
-        <listAll v-if="totalDependencies > 0" :class="{'list-all': true, 'top': isTop, 'center': !isTop}" />
+        <listAll v-if="allDependencies.length > 0" :class="{'list-all': true, 'top': isTop, 'center': !isTop}" />
       </div>
     </div>
     </div>
-  </template>
-  <style scoped>
+</template>
+<script setup>
+  import listAll from '@/components/package/listAll.vue'
+  const { updateUrl, loading, setLoading, allDependencies } = useGuidline()
+  const isTop = ref(false)
+  const url = ref('')
+  const updateGitUrl =()=>{
+    setLoading(true)
+    updateUrl(url.value)
+    isTop.value = true
+  }
+</script>
+<style scoped>
   /* background black with lighting input fuld of 50% width */
   
   .list-all{

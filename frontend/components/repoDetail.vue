@@ -1,33 +1,33 @@
 <template>
     <v-card class="mx-auto">
         <template v-slot:title>
-            <span class="font-weight-black">Details of Repo [{{ analyzeData.repo_name }}]</span>
+            <span class="font-weight-black">Details of Repo [{{ repoDetails.repo_name }}]</span>
         </template>
         <v-card-text class="bg-surface-light pt-4">
             <div class="d-flex">
                 <div class="repo-data-row">
                     <div class="individual-data">
-                        Repo Name :{{ analyzeData.repo_name }}
+                        Repo Name :{{ repoDetails.repo_name }}
                     </div>
                     <div class="individual-data">
-                        Language :{{ analyzeData.language }}
+                        Language :{{ repoDetails.language }}
                     </div>
                     <div class="individual-data">
-                        Default Branch :{{ analyzeData.default_branch }}
+                        Default Branch :{{ repoDetails.default_branch }}
                     </div>
                     <div class="individual-data">
-                        Total Commits :{{ analyzeData.total_commits }}
+                        Total Commits :{{ repoDetails.total_commits }}
                     </div>
                     <div class="individual-data">
-                        Total Prs :{{ analyzeData.total_prs }}
+                        Total Prs :{{ repoDetails.total_prs }}
                     </div>
                 </div>
                 <div class="repo-data-row">
                     <div class="individual-data">
-                        Total Branches :{{ analyzeData.total_branches }}
+                        Total Branches :{{ repoDetails.total_branches }}
                     </div>
                     <div class="individual-data">
-                        Total Contributors :{{ analyzeData.total_contributors - 1 }} + Contributers
+                        Total Contributors :{{ repoDetails.total_contributors - 1 }} + Contributers
                     </div>
                     <!-- <div class="individual-data">
                         contributors :
@@ -36,7 +36,20 @@
                         </template>
                     </div> -->
                     <div class="individual-data">
-                        Last Update : {{ analyzeData.last_update }}
+                        Last Update : {{ repoDetails.last_update }}
+                    </div>
+                    <div class="individual-data">
+                        Reviewer :
+                        <v-btn
+                        class="ma-2"
+                    prepend-icon="mdi-account-circle"
+                    v-for="reviewer in repoDetails.reviewers" :key="reviewer"
+                    >
+                    <template v-slot:prepend>
+                        <v-icon color="success"></v-icon>
+                    </template>
+                    {{ reviewer }}
+                    </v-btn>
                     </div>
                 </div>
             </div>
@@ -45,13 +58,15 @@
 </template>
 
 <script setup>
-import { useGuidlineStore } from '~/store/guidline.js'
-const guidlineStore = useGuidlineStore();
-const analyzeData = ref({});
-guidlineStore.getRepoAnalysis();
-watch(() => guidlineStore.analyzeData, (newVal, oldVal) => {
-    analyzeData.value = guidlineStore.analyzeData;
-});
+const { repoDetails } = useGuidline()
+
+// import { useGuidlineStore } from '~/store/guidline.js'
+// const guidlineStore = useGuidlineStore();
+// const analyzeData = ref({});
+// guidlineStore.getRepoAnalysis();
+// watch(() => guidlineStore.analyzeData, (newVal, oldVal) => {
+//     analyzeData.value = guidlineStore.analyzeData;
+// });
 </script>
 <style scoped>
 .flex {

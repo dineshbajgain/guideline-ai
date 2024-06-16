@@ -23,8 +23,8 @@ CORS(app)  # This will enable CORS for all routes
 def test():
     return test_controller()
 
-@app.route("/colne_repo", methods=["POST"])
-def colne_repo():
+@app.route("/clone_repo", methods=["POST"])
+def clone_repo():
    repo_url = request.json["repo_url"]
    clone_repo_controller(repo_url)
    return jsonify({"message": "Success"})
@@ -34,7 +34,7 @@ def get_dependencies():
    repo_url = request.json["repo_url"]
    return get_dependency_controller(repo_url)
 
-@app.route("/get_dependencies/history", methods=["POST"])
+@app.route("/get_dependencies_history", methods=["POST"])
 def get_dependencies_hoistory():
    repo_url = request.json["repo_url"]
    package_name = request.json["package_name"]
@@ -67,7 +67,7 @@ def generate_text():
     dependency = request.json["package_name"]
     resources = generate_learning_resources(dependency)
     return jsonify({"resources": resources})
-@app.route("/sentiment/analysis", methods=["POST"])
+@app.route("/sentiment_analysis", methods=["POST"])
 def sentiment_analysis():
     repo_url = request.json["repo_url"]
     user_name = request.json["user_name"]
