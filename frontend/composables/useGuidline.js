@@ -18,6 +18,7 @@ export const useGuidline = () => {
     const getCommitHistory = () => store.postGetCommitHistory()
     const postGetGenerateText = (dependency) => store.postGetGenerateText(dependency)
     const postGetUserSentimentAnalysis = (user_name) => store.postGetUserSentimentAnalysis(user_name)
+    const resetStore = () => store.resetState()
     const squadConfidence = computed(() => {
       let sum = 0
       allDependencies.value.forEach((dependency) => {
@@ -36,5 +37,5 @@ export const useGuidline = () => {
        }
       }
     })
-    return { setAllDependencies, squadConfidence, loading, repoDetails, allDependencies, dependencyHistory, sentimentAnalysisData, commitHistory, updateUrl, setLoading, cloneRepo, getRepoDetails, getDependencies, getDependenciesHistory, getCommitHistory, postGetGenerateText, postGetUserSentimentAnalysis }
+    return { setAllDependencies, resetStore, squadConfidence, loading, repoDetails, allDependencies, dependencyHistory, sentimentAnalysisData, commitHistory, updateUrl, setLoading, cloneRepo, getRepoDetails, getDependencies, getDependenciesHistory, getCommitHistory, postGetGenerateText, postGetUserSentimentAnalysis }
   }

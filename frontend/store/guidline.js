@@ -15,7 +15,7 @@ export const guidlineStore = defineStore('guidline', {
     cloneMessage: '',
   }),
   actions: {
-    resetUrl(){
+    resetState(){
         this.url= '';
         this.learningPath=[];
         this.totalDependencies= 0;

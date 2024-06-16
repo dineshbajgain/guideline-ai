@@ -11,7 +11,7 @@
       ></v-text-field>
       <div class="mx-4">
         <v-btn variant="outlined" size="x-large" v-if="!isTop" @click="updateGitUrl">Start</v-btn>
-        <v-btn v-else variant="outlined" size="x-large"  @click="resetUrl">Reset</v-btn>
+        <v-btn v-else variant="outlined" size="x-large"  @click="reset">Reset</v-btn>
       </div>
       </div>
         </div>
@@ -30,13 +30,18 @@
 </template>
 <script setup>
   import listAll from '@/components/package/listAll.vue'
-  const { updateUrl, loading, setLoading, allDependencies } = useGuidline()
+  const { updateUrl, loading, setLoading, allDependencies, resetStore } = useGuidline()
   const isTop = ref(false)
   const url = ref('')
   const updateGitUrl =()=>{
     setLoading(true)
     updateUrl(url.value)
     isTop.value = true
+  }
+  const reset =()=>{
+    url.value = ''
+    resetStore()
+    isTop.value = false
   }
 </script>
 <style scoped>
