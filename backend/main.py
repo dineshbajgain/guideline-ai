@@ -8,7 +8,15 @@ from package_analysis import (
 from learning_path import create_learning_path, update_progress
 from documentation import generate_documentation
 from gen_ai import generate_learning_resources
-from analytics import git_commit_analytics
+
+from controllers.test_controller import test_controller
+from controllers.clone_repo_controller import clone_repo_controller
+from controllers.get_dependency_controller import get_dependency_controller
+from controllers.git_commit_analytics_controller import (
+    get_commit_history,
+    get_highest_contributor,
+    get_total_lines_updated,
+)
 
 app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
@@ -16,11 +24,31 @@ CORS(app)  # This will enable CORS for all routes
 
 @app.route("/test", methods=["POST"])
 def test():
-    data = request.json
-    if not data or "repo_url" not in data:
-        return jsonify({"error": "Missing repo_url"}), 400
-    return jsonify({"message": "Success", "repo_url": data["repo_url"]})
+    return test_controller()
 
+@app.route("/colne_repo", methods=["POST"])
+def colne_repo():
+   repo_url = request.json["repo_url"]
+   clone_repo_controller(repo_url)
+   return jsonify({"message": "Success"})
+
+@app.route("/get_dependencies", methods=["POST"])
+def get_dependencies():
+   repo_url = request.json["repo_url"]
+   return get_dependency_controller(repo_url)
+
+@app.route("/commit_history", methods=["POST"])
+def commit_history():
+    repo_url = request.json["repo_url"]
+    return get_commit_history(repo_url)
+
+@app.route("/highest_contributor", methods=["POST"])
+def get_highest_contributor():
+    return get_highest_contributor()
+
+@app.route("/lines_changed", methods=["POST"])
+def get_total_lines_updated():
+    return get_total_lines_updated()
 
 @app.route("/getRepoAnalysis", methods=["POST"])
 def getRepoAnalysis():
@@ -116,22 +144,6 @@ def generateText():
     dependency = request.json["dependency"]
     resources = generate_learning_resources(dependency)
     return jsonify({"resources": resources})
-
-
-@app.route("/commit-history", methods=["POST"])
-def get_commit_history():
-    return git_commit_analytics.get_commit_history()
-
-
-@app.route("/highest-contributor", methods=["POST"])
-def get_highest_contributor():
-    return git_commit_analytics.get_highest_contributor()
-
-
-@app.route("/lines-changed", methods=["POST"])
-def get_total_lines_updated():
-    return git_commit_analytics.get_total_lines_updated()
-
 
 if __name__ == "__main__":
     app.run(debug=True)

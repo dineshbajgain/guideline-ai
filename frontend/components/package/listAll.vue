@@ -13,19 +13,27 @@
                     fill-dot
                 >
                     <v-card>
-                    <v-card-title :class="['text-h6', `bg-${colors[Math.floor(Math.random()*colors.length)]}`]">
+                    <v-card-title @click="checkData(item)" :class="['text-h6', `bg-${colors[Math.floor(Math.random()*colors.length)]}`]">
                         {{ item.dependency }}
                     </v-card-title>
-                    <v-card-text class="bg-white text--primary">
-                        <p>Lorem ipsum dolor sit amet, no nam oblique veritus. Commune scaevola imperdiet nec ut, sed euismod convenire principes at. Est et nobis iisque percipit, an vim zril disputando voluptatibus, vix an salutandi sententiae.</p>
-                        <v-btn
-                        variant="outlined"
-                        >
-                        Button
-                        </v-btn>
-                    </v-card-text>
+                    
                     </v-card>
                 </v-timeline-item>
+                <v-navigation-drawer
+                    v-model="drawer"
+                    temporary
+                    location="right"
+                    :width="400"
+                >
+                <v-card>
+                    <v-card-title>
+                        {{ drawerData.dependency }}
+                    </v-card-title>
+                    <v-card-text>
+                        <VueMarkdown :source="generatedText" />
+                    </v-card-text>
+                    </v-card>
+                </v-navigation-drawer>
             </v-timeline>
     </div>
 </template>
@@ -34,15 +42,29 @@
 import { ref } from "vue";
 import { useGuidlineStore } from '~/store/guidline.js'
 import repoDetails from '~/components/repoDetails.vue'
+import VueMarkdown from 'vue-markdown-render'
+
 const guidlineStore = useGuidlineStore()
 const events = ref(guidlineStore.learningPath);
+const generatedText = ref('');
 const visible = ref(false);
 const changeVisible = () => {
     visible.value = !visible.value;
 }
+//
 
 const colors =['red-lighten-2','purple-lighten-2','green-lighten-1','indigo-lighten-2'];
 const icons = ['mdi-star','mdi-book-variant','mdi-airballoon','mdi-layers-triple'];
+const drawer = ref(false);
+const drawerData = ref(null);
+const checkData = (item) => {
+    drawer.value = true;
+    guidlineStore.generateText(item.dependency)
+    drawerData.value = item;
+}
+watch(() => guidlineStore.generatedText, (value) => {
+    generatedText.value = value.resources.join(' ');
+})
 </script>
 
 <style lang="scss" scoped>

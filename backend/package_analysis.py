@@ -5,7 +5,10 @@ from pathlib import Path
 import requests
 import base64
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 
+load_dotenv()
+github_token = os.getenv('GITHUB_TOKEN')
 
 def download_package_json(repo_url):
     owner_repo = repo_url.rstrip("/").split("/")[-2:]
@@ -58,7 +61,7 @@ def analyze_github_repo(repo_url, custom_day):
 
     # Construct the URL for the GitHub API
     url = f"https://api.github.com/repos/{owner}/{repo}"
-    headers = {"Authorization": f"token "}
+    headers = {"Authorization": f"token {github_token}"}
     # Make the GET request
     response = requests.get(url)
 

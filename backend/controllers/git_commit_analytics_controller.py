@@ -2,27 +2,31 @@ import os
 import subprocess
 from datetime import datetime, timedelta
 from flask import Flask, jsonify, request
-
+from controllers.helpers.main import get_repo_path
 app = Flask(__name__)
-repo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "temp_repo")
+import json
+
+repo_path = ''
 INVALID_DAYS_ERROR = "Invalid 'days' parameter. It must be an integer."
 REPO_NOT_EXIST_ERROR = "Repository not cloned or does not exist!"
 
 
-def __does_repo_exist():
+def __does_repo_exist(repo_url):
+    global repo_path
+    repo_path= get_repo_path(repo_url)
     print(repo_path)
     return os.path.exists(repo_path)
 
 
-def get_commit_history():
+def get_commit_history(repo_url):
 
-    if not __does_repo_exist():
+    if not __does_repo_exist(repo_url):
         return jsonify({"error": REPO_NOT_EXIST_ERROR}), 404
 
     # Get the 'days' query parameter
     days = request.json["days"]
 
-    git_command = ["git", "log", "--pretty=format:%h - %an, %ar : %s"]
+    git_command = ["git", "log", "--pretty=format:'{\"commit_id\":\"%H\",\"username\":\"%an\",\"date_time\":\"%ai\",\"commit_message\":\"%s\"}'"]
 
     # Calculate the date for the --since parameter
     if days:
@@ -46,8 +50,18 @@ def get_commit_history():
         )
 
         commits = result.stdout.split("\n")
-
-        return jsonify(commits), 200
+        # Remove the outer single quotes and parse each string as JSON
+        # Remove the outer single quotes and parse each string as JSON
+        commits_json = []
+        for commit in commits:
+            if commit:
+                commit_json = json.loads(commit.strip("'"))
+                commit_date = datetime.strptime(commit_json["date_time"], "%Y-%m-%d %H:%M:%S %z")
+                diff_days = (datetime.now(commit_date.tzinfo) - commit_date).days
+                commit_json["diff_days"] = diff_days
+                commits_json.append(commit_json)
+                
+        return jsonify(commits_json), 200
 
     except subprocess.CalledProcessError as e:
         return jsonify({"Error occurred while fetching commit history! ": str(e)}), 500
