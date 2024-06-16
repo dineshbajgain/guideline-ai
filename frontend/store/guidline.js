@@ -84,7 +84,10 @@ export const guidlineStore = defineStore('guidline', {
     async postGetCommitHistory(){
         const { $axios } = useNuxtApp()
         try {
-            const response = await $axios.post('/api/commit_history', {repo_url: this.url})
+            const response = await $axios.post('/api/commit_history', {
+                repo_url: this.url,
+                days: 30
+            })
             this.commitHistory = response.data
         } catch (error) {
             console.error(error)
@@ -101,13 +104,15 @@ export const guidlineStore = defineStore('guidline', {
         }
     },
     // sentimentAnalysis
-    async postGetUserSentimentAnalysis(){
+    async postGetUserSentimentAnalysis(user_name){
         const { $axios } = useNuxtApp()
         try {
-            const response = await $axios.post('/api/sentiment_analysis', {repo_url: this.url})
+            const response = await $axios.post('/api/sentiment_analysis', {repo_url: this.url,user_name: user_name})
             this.sentimentAnalysisData = response.data
+            return response.data
         } catch (error) {
             console.error(error)
+            return error.response.data
         }
     },
   }

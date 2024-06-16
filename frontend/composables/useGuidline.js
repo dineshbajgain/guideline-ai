@@ -1,7 +1,7 @@
 import { guidlineStore } from '../store/guidline.js'
 import { storeToRefs } from 'pinia'
 export const useGuidline = () => {
-  const { loading, repoDetails, allDependencies,dependencyHistory } = storeToRefs(guidlineStore())
+  const { loading, repoDetails, allDependencies,dependencyHistory, sentimentAnalysisData, commitHistory } = storeToRefs(guidlineStore())
     const nuxtApp = useNuxtApp()
     const store = guidlineStore()
     const isLoading = computed(() => store.loading)
@@ -14,7 +14,7 @@ export const useGuidline = () => {
     const getDependenciesHistory = (dependency) => store.postGetDependenciesHistory(dependency)
     const getCommitHistory = () => store.postGetCommitHistory()
     const postGetGenerateText = (dependency) => store.postGetGenerateText(dependency)
-    const postGetUserSentimentAnalysis = () => store.postGetUserSentimentAnalysis()
+    const postGetUserSentimentAnalysis = (user_name) => store.postGetUserSentimentAnalysis(user_name)
     watch(githubUrl, async () => {
       if (store.url) {
        const response = await cloneRepo()
@@ -25,5 +25,5 @@ export const useGuidline = () => {
        }
       }
     })
-    return { loading, repoDetails, allDependencies, dependencyHistory, updateUrl, setLoading, cloneRepo, getRepoDetails, getDependencies, getDependenciesHistory, getCommitHistory, postGetGenerateText, postGetUserSentimentAnalysis }
+    return { loading, repoDetails, allDependencies, dependencyHistory, sentimentAnalysisData, commitHistory, updateUrl, setLoading, cloneRepo, getRepoDetails, getDependencies, getDependenciesHistory, getCommitHistory, postGetGenerateText, postGetUserSentimentAnalysis }
   }

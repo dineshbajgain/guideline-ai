@@ -27,7 +27,17 @@
                     location="right"
                     :width="600"
                 >
-                    <v-card>
+                <template v-if="loading">
+                    <v-skeleton-loader
+                        v-for="i in 5"
+                        :key="i"
+                        class="my-10"
+                        elevation="4"
+                        type="paragraph"
+                        boilerplate
+                    ></v-skeleton-loader>
+                </template>
+                    <v-card v-else> 
                         <v-card-title>
                             {{ drawerData.dependency }}
                         </v-card-title>
@@ -70,37 +80,20 @@
 <script setup>
 import repoDetail from '~/components/repoDetail.vue'
 import readmeDisplay from '~/components/readmeDisplay.vue'
-const { loading, allDependencies, getDependenciesHistory, dependencyHistory } = useGuidline()
+const { loading, allDependencies, getDependenciesHistory, dependencyHistory, setLoading } = useGuidline()
 const isTop = ref(true)
 const drawer = ref(false)
 const drawerData = ref(null);
 
-const dependencyDetails = (item) => {
+const dependencyDetails = async (item) => {
+    setLoading(true);
     drawer.value = true;
     drawerData.value = item;
-    getDependenciesHistory(item.dependency)
+    await getDependenciesHistory(item.dependency)
+    setLoading(false);
 }
-// const guidlineStore = useGuidlineStore()
-// const events = ref(guidlineStore.learningPath);
-// const generatedText = ref('');
-// const visible = ref(false);
-// const changeVisible = () => {
-//     visible.value = !visible.value;
-// }
-// //
-
 const colors =['red-lighten-2','purple-lighten-2','green-lighten-1','indigo-lighten-2'];
 const icons = ['mdi-star','mdi-book-variant','mdi-airballoon','mdi-layers-triple'];
-// const drawer = ref(false);
-// const drawerData = ref(null);
-// const checkData = (item) => {
-//     drawer.value = true;
-//     guidlineStore.generateText(item.dependency)
-//     drawerData.value = item;
-// }
-// watch(() => guidlineStore.generatedText, (value) => {
-//     generatedText.value = value.resources.join(' ');
-// })
 </script>
 
 <style lang="scss" scoped>
