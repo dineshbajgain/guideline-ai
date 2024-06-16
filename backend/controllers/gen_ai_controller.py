@@ -11,7 +11,7 @@ if tokenizer.pad_token is None:
 generator = pipeline('text-generation', model=model, tokenizer=tokenizer)
 
 def generate_learning_resources(dependency):
-    resources = generator(f"How to install {dependency} in js.", max_length=500)[0]['generated_text']
+    resources = generator(f"You are a helpful assistant.I have a JavaScript dependency that I need to use in my project. Please provide a detailed example of how to use this dependency. Here are the specifics of the dependency I am using: Dependency Name: {dependency}", max_length=500)[0]['generated_text']
     resources = resources.split('\n')
     resources =  [resource for resource in resources if resource]
      # Define subfolder path

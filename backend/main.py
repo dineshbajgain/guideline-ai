@@ -12,6 +12,8 @@ from controllers.git_commit_analytics_controller import (
     get_highest_contributor,
     get_total_lines_updated,
 )
+from controllers.gen_ai_controller import generate_learning_resources
+from controllers.sentiment_analysis_controller import sentiment_analysis_controller
 
 app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
@@ -60,6 +62,16 @@ def get_repo_details():
         return jsonify(repoAnalysis)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+@app.route("/generate_text", methods=["POST"])
+def generate_text():
+    dependency = request.json["package_name"]
+    resources = generate_learning_resources(dependency)
+    return jsonify({"resources": resources})
+@app.route("/sentiment/analysis", methods=["POST"])
+def sentiment_analysis():
+    repo_url = request.json["repo_url"]
+    user_name = request.json["user_name"]
+    return sentiment_analysis_controller(repo_url,user_name)
 
 if __name__ == "__main__":
     app.run(debug=True)
