@@ -12,6 +12,7 @@ from gen_ai import generate_learning_resources
 from controllers.test_controller import test_controller
 from controllers.clone_repo_controller import clone_repo_controller
 from controllers.get_dependency_controller import get_dependency_controller
+from controllers.get_dependency_history_controller import get_dependency_history_controller
 from controllers.git_commit_analytics_controller import (
     get_commit_history,
     get_highest_contributor,
@@ -36,6 +37,12 @@ def colne_repo():
 def get_dependencies():
    repo_url = request.json["repo_url"]
    return get_dependency_controller(repo_url)
+
+@app.route("/get_dependencies/history", methods=["POST"])
+def get_dependencies_hoistory():
+   repo_url = request.json["repo_url"]
+   package_name = request.json["package_name"]
+   return get_dependency_history_controller(repo_url,package_name)
 
 @app.route("/commit_history", methods=["POST"])
 def commit_history():
