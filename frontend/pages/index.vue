@@ -9,9 +9,9 @@
         label="Enter Your Github URL"
         variant="outlined"
       ></v-text-field>
-      <div>
-        <button v-if="!isTop" @click="updateGitUrl">Start</button>
-        <button v-else @click="resetUrl">Reset</button>
+      <div class="mx-4">
+        <v-btn variant="outlined" size="x-large" v-if="!isTop" @click="updateGitUrl">Start</v-btn>
+        <v-btn v-else variant="outlined" size="x-large"  @click="resetUrl">Reset</v-btn>
       </div>
       </div>
         </div>
@@ -50,6 +50,8 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background-image: url('../public/git.webp');
+    background-size: cover;
   }
   input {
     font-size: 20px;
@@ -58,23 +60,13 @@
     border-radius: 5px;
     border: none;
   }
-  button {
-    margin-left: 10px;
-    padding: 11px;
-    border-radius: 5px;
-    border: none;
-    background-color: #000000;
-    color: white;
-    font-size: 20px;
-    border: 1px solid white;
-  }
   .input-box{
     width: 80%;
     transition: all 0.5s ease; /* Add this line */
   }
   .input-box.center {
     position: absolute;
-    top: 50%;
+    top: 45%;
     transform: translateY(-50%);
   }
   .input-box.top {

@@ -2,7 +2,7 @@
 <template>
     <div>
         <div>
-            <repoDetail :class="{'repo-content': true, 'top': isTop, 'center': !isTop}" />
+            <repoDetail :class="{'repo-content mx-4': true, 'top': isTop, 'center': !isTop}" />
         </div>
             <v-timeline align="start">
                 <v-timeline-item
@@ -12,7 +12,7 @@
                     :icon="icons[Math.floor(Math.random()*icons.length)]"
                     fill-dot
                 >
-                    <v-card>
+                    <v-card class="mx-4">
                     <v-card-title @click="dependencyDetails(item)" :class="['text-h6', `bg-${colors[Math.floor(Math.random()*colors.length)]}`]">
                         {{ item.dependency }}
                     </v-card-title>
@@ -50,6 +50,7 @@
                                     item-title="title"
                                     item-value="value"
                                     variant="outlined"
+                                    density="compact"
                                     max-width="200"
                                     ></v-select>
                             </div>

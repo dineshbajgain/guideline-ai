@@ -5,7 +5,7 @@
             <div class="d-flex">
                 <span class="font-weight-black">Details of Repo [{{ repoDetails.repo_name }}]</span>
                 <div class="ml-auto w-custom">
-                    <v-select variant="outlined" :items="items" v-model="selectedSquad" item-title="name" label="Squad">
+                    <v-select density="compact" variant="outlined" :items="items" v-model="selectedSquad" item-title="name" label="Squad">
                         <template v-slot:item="{ props, item }">
                         <v-list-item v-bind="props" :subtitle="item.raw.department"></v-list-item>
                         </template>
